@@ -25,13 +25,6 @@ namespace WebApi.Models
         public virtual DbSet<MartialStatus> MartialStatus { get; set; }
         public virtual DbSet<User> User { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("Server=tcp:ddapi.database.windows.net,1433;Initial Catalog=Dimension Data API;Persist Security Info=False;User ID=PietervanZyl;Password=TfzYcddxTT4tbwM!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-            }
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

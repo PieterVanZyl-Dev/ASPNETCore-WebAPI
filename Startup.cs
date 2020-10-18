@@ -29,8 +29,10 @@ namespace WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddCors();
 
             services.AddScoped<AuthHandlerService>();
+
             var key = Encoding.ASCII.GetBytes(_Configuration.GetValue<string>("AppSettings:Secret"));
             services.AddDbContext<DimensionDataAPIContext>(options =>
             options.UseSqlServer(_Configuration.GetConnectionString("DefaultConnection")));
@@ -48,11 +50,11 @@ namespace WebApi
                     {
                         var Datacontext = context.HttpContext.RequestServices.GetRequiredService<AuthHandlerService>();
                         var userId = int.Parse(context.Principal.Identity.Name);
-                        var user = Datacontext.UserExists(userId);
-                        if (user == null)
+                        var UserExists = Datacontext.UserExists(userId);
+                        if (UserExists == false)
                         {
                                         // return unauthorized if user no longer exists
-                                        context.Fail("Unauthorized");
+                                        context.Fail("User doesn't exist");
                         }
                         return Task.CompletedTask;
                     }
@@ -75,6 +77,8 @@ namespace WebApi
 
 
 
+
+
             services.AddSingleton<IConfiguration>(_Configuration);
         }
 
@@ -88,14 +92,18 @@ namespace WebApi
 
             app.UseHttpsRedirection();
 
+
             app.UseRouting();
 
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
     }
 }

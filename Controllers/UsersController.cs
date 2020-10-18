@@ -15,9 +15,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize]
+    [Route("[controller]")]
     [ApiController]
-    [AllowAnonymous]
     public class UsersController : ControllerBase
     {
         private readonly DimensionDataAPIContext _context;
@@ -82,18 +82,42 @@ namespace WebApi.Controllers
 
         // POST: api/Users
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        [AllowAnonymous]
+        public async Task<ActionResult<User>> PostUser(RegisterUser user)
         {
-            _context.User.Add(user);
+
+            if (string.IsNullOrWhiteSpace(user.Password))
+                return BadRequest(new { message = "Password is required" });
+
+
+
+            User userobj = new User();
+
+
+            byte[] passwordHash, passwordSalt;
+            CreatePasswordHash(user.Password, out passwordHash, out passwordSalt);
+
+
+
+            userobj.PasswordHash = passwordHash;
+            userobj.PasswordSalt = passwordSalt;
+            userobj.FirstName = user.FirstName;
+            userobj.LastName = user.LastName;
+            userobj.UserName = user.Username;
+
+
+
+            _context.User.Add(userobj);
+
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (UserExists(user.Id))
+                if (UserExists(userobj.Id))
                 {
-                    return Conflict();
+                    return Conflict(new { message = "User Name exists" });
                 }
                 else
                 {
@@ -101,10 +125,10 @@ namespace WebApi.Controllers
                 }
             }
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return CreatedAtAction("GetUser", new { id = userobj.Id }, user);
         }
 
-        // POST: api/Users
+        // POST: api/Users/authenticate
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate(AuthenticateUser user)
