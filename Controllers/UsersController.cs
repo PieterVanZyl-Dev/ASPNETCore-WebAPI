@@ -16,7 +16,9 @@ using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 
 namespace WebApi.Controllers
 {
+
     [Authorize]
+    [Produces("application/json")]
     [Route("[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -201,7 +203,17 @@ namespace WebApi.Controllers
 
         }
 
+        /// <summary>
+        /// Creates/Registers an API User.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>A newly created TodoItem</returns>
+        /// <response code="201">Returns the newly created user item</response>
+        /// <response code="400">If the item is null, password doesn't exist or username already exists</response>  
         // POST: api/Users
+    [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [AllowAnonymous]
         public async Task<ActionResult<User>> PostUser(RegisterUser user)
@@ -228,8 +240,16 @@ namespace WebApi.Controllers
             userobj.Role = "user";
             //set default role to user.
 
+            var userName = await _context.User
+            .Where(x => x.UserName == user.Username)
+            .FirstOrDefaultAsync();
 
+            Console.WriteLine(userName);
 
+            if(userName != null && userName.UserName == user.Username )
+            {
+                return BadRequest(new { message = "Woops, That UserName Already Exists" });
+            }
             _context.User.Add(userobj);
 
             try
@@ -244,7 +264,16 @@ namespace WebApi.Controllers
             return CreatedAtAction("GetUser", new { id = userobj.Id }, user);
         }
 
-        // POST: api/Users/authenticate
+        /// <summary>
+        /// Authenticates an API User.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>A newly created TodoItem</returns>
+        /// <response code="200">return basic user info and authentication token</response>
+        /// <response code="400">Throws bad request if username or password is incorrect</response>  
+        // POST: Users/authenticate
+        [ProducesResponseType(typeof(AuthenticatedUserResponse), 200)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate(AuthenticateUser user)

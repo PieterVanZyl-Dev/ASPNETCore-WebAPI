@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -11,7 +10,11 @@ using Microsoft.IdentityModel.Tokens;
 using WebApi.Models;
 using WebApi.Services;
 using System.Text;
-
+using Microsoft.OpenApi.Models;
+using System;
+using System.Reflection;
+using System.IO;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace WebApi
 {
@@ -71,13 +74,53 @@ namespace WebApi
             });
 
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Company X API",
+                    Description = "A API for Company X using Authentication and MVC CORE",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Pieter van Zyl",
+                        Email = string.Empty,
+                        Url = new Uri("https://twitter.com/pieter_the"),
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "Use under CC BY-NC 3.0 ZA",
+                        Url = new Uri("https://creativecommons.org/licenses/by-nc/3.0/za/"),
+                    }
+                });
+
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+
+                //c.ExampleFilters();
 
 
+                var filePath = Path.Combine(AppContext.BaseDirectory, "WebApi.xml");
+                c.IncludeXmlComments(filePath); // standard Swashbuckle functionality, this needs to be before c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>()
 
+                c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>(); // Adds "(Auth)" to the summary so that you can see which endpoints have Authorization
+                                                                              // or use the generic method, e.g. c.OperationFilter<AppendAuthorizeToSummaryOperationFilter<MyCustomAttribute>>();
 
+                // add Security information to each operation for OAuth2
+                c.OperationFilter<SecurityRequirementsOperationFilter>();
+                // or use the generic method, e.g. c.OperationFilter<SecurityRequirementsOperationFilter<MyCustomAttribute>>();
 
-
-
+                // if you're using the SecurityRequirementsOperationFilter, you also need to tell Swashbuckle you're using OAuth2
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+            });
 
             services.AddSingleton<IConfiguration>(_Configuration);
         }
@@ -99,6 +142,16 @@ namespace WebApi
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Company X");
+            });
 
             app.UseAuthentication();
             app.UseAuthorization();
