@@ -58,6 +58,8 @@ namespace WebApi.Models
 
                 entity.Property(e => e.EmployeeNumber).ValueGeneratedNever();
 
+
+
                 entity.HasOne(d => d.BusinessTravelNavigation)
                     .WithMany(p => p.Employee)
                     .HasForeignKey(d => d.BusinessTravel)

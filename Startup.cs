@@ -15,6 +15,8 @@ using System;
 using System.Reflection;
 using System.IO;
 using Swashbuckle.AspNetCore.Filters;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace WebApi
 {
@@ -123,6 +125,10 @@ namespace WebApi
             });
 
             services.AddSingleton<IConfiguration>(_Configuration);
+
+            services.AddMvc(option =>option.EnableEndpointRouting = false)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,9 @@ using WebApi.Models;
 
 namespace WebApi.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
+    [Produces("application/json")]
     [ApiController]
     public class EmployeesController : ControllerBase
     {
@@ -22,16 +25,111 @@ namespace WebApi.Controllers
 
         // GET: api/Employees
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployee()
+        public async Task<ActionResult<IEnumerable<EmployeeResponse>>> GetEmployee()
         {
-            return await _context.Employee.ToListAsync();
-        }
+            var employee = await _context.Employee
+            .Include("GenderNavigation")
+            .Include("BusinessTravelNavigation")
+            .Include("DepartmentNavigation")
+            .Include("EducationFieldNavigation")
+            .Include("JobRoleNavigation")
+            .Include("MaritalStatusNavigation")
+            .Include("EmployeeSurveyNavigation")
+            .Select(a => new EmployeeResponse
+            {
+                Age = a.Age,
+                Attrition = a.Attrition,
+                BusinessTravel = a.BusinessTravelNavigation.BusinessTravel1,
+                DailyRate = a.DailyRate,
+                Department = a.DepartmentNavigation.Department1,
+                DistanceFromHome = a.DistanceFromHome,
+                Education = a.Education,
+                EducationField = a.EducationFieldNavigation.EducationField1,
+                EmployeeNumber = a.EmployeeNumber,
+                Gender = a.GenderNavigation.Gender1,
+                HourlyRate = a.HourlyRate,
+                JobInvolvement = a.JobInvolvement,
+                JobLevel = a.JobLevel,
+                JobRole = a.JobRoleNavigation.JobRole1,
+                MaritalStatus = a.MaritalStatusNavigation.MaritalStatus1,
+                MonthlyIncome = a.MonthlyIncome,
+                MonthlyRate = a.MonthlyRate,
+                NumCompaniesWorked = a.NumCompaniesWorked,
+                OverTime = a.OverTime,
+                PercentSalaryHike = a.PercentSalaryHike,
+                PerformanceRating = a.PerformanceRating,
+                StandardHours = a.StandardHours,
+                StockOptionLevel = a.StockOptionLevel,
+                TotalWorkingYears = a.TotalWorkingYears,
+                TrainingTimesLastYear = a.TrainingTimesLastYear,
+                YearsAtCompany = a.YearsAtCompany,
+                YearsInCurrentRole = a.YearsInCurrentRole,
+                YearsSinceLastPromotion = a.YearsSinceLastPromotion,
+                YearsWithCurrManager = a.YearsWithCurrManager,
+                EnvironmentSatisfaction = a.EmployeeSurveyNavigation.EnvironmentSatisfaction,
+                RelationshipSatisfaction = a.EmployeeSurveyNavigation.RelationshipSatisfaction,
+                JobSatisfaction = a.EmployeeSurveyNavigation.JobSatisfaction,
+                WorkLifeBalance = a.EmployeeSurveyNavigation.WorkLifeBalance})
+                .ToListAsync();
+
+            return employee;
+                 
+                }
 
         // GET: api/Employees/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Employee>> GetEmployee(int id)
+        public async Task<ActionResult<EmployeeResponse>> GetEmployee(int id)
         {
-            var employee = await _context.Employee.FindAsync(id);
+
+
+            var employee = await _context.Employee
+                .Include("GenderNavigation")
+                .Include("BusinessTravelNavigation")
+                .Include("DepartmentNavigation")
+                .Include("EducationFieldNavigation")
+                .Include("JobRoleNavigation")
+                .Include("MaritalStatusNavigation")
+                .Include("EmployeeSurveyNavigation")
+                .Where(emp => emp.EmployeeNumber == id)
+                .Select(a => new EmployeeResponse
+                {
+                    Age = a.Age,
+                    Attrition = a.Attrition,
+                    BusinessTravel = a.BusinessTravelNavigation.BusinessTravel1,
+                    DailyRate = a.DailyRate,
+                    Department = a.DepartmentNavigation.Department1,
+                    DistanceFromHome = a.DistanceFromHome,
+                    Education = a.Education,
+                    EducationField = a.EducationFieldNavigation.EducationField1,
+                    EmployeeNumber = a.EmployeeNumber,
+                    Gender = a.GenderNavigation.Gender1,
+                    HourlyRate = a.HourlyRate,
+                    JobInvolvement = a.JobInvolvement,
+                    JobLevel = a.JobLevel,
+                    JobRole = a.JobRoleNavigation.JobRole1,
+                    MaritalStatus = a.MaritalStatusNavigation.MaritalStatus1,
+                    MonthlyIncome = a.MonthlyIncome,
+                    MonthlyRate = a.MonthlyRate,
+                    NumCompaniesWorked = a.NumCompaniesWorked,
+                    OverTime = a.OverTime,
+                    PercentSalaryHike = a.PercentSalaryHike,
+                    PerformanceRating = a.PerformanceRating,
+                    StandardHours = a.StandardHours,
+                    StockOptionLevel = a.StockOptionLevel,
+                    TotalWorkingYears = a.TotalWorkingYears,
+                    TrainingTimesLastYear = a.TrainingTimesLastYear,
+                    YearsAtCompany = a.YearsAtCompany,
+                    YearsInCurrentRole = a.YearsInCurrentRole,
+                    YearsSinceLastPromotion = a.YearsSinceLastPromotion,
+                    YearsWithCurrManager = a.YearsWithCurrManager,
+                    EnvironmentSatisfaction = a.EmployeeSurveyNavigation.EnvironmentSatisfaction,
+                    RelationshipSatisfaction = a.EmployeeSurveyNavigation.RelationshipSatisfaction,
+                    JobSatisfaction = a.EmployeeSurveyNavigation.JobSatisfaction,
+                    WorkLifeBalance = a.EmployeeSurveyNavigation.WorkLifeBalance
+                }).
+                FirstOrDefaultAsync();
+
+
 
             if (employee == null)
             {
@@ -40,6 +138,11 @@ namespace WebApi.Controllers
 
             return employee;
         }
+
+
+
+
+
 
         // PUT: api/Employees/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for

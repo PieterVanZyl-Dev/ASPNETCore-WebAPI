@@ -11,7 +11,7 @@ namespace WebApi.Models
         }
 
         public int SurveyId { get; set; }
-        public short EmployeeId { get; set; }
+        public int EmployeeId { get; set; }
         public byte EnvironmentSatisfaction { get; set; }
         public byte RelationshipSatisfaction { get; set; }
         public byte JobSatisfaction { get; set; }

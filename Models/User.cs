@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices;
+using System.Security.Claims;
 
 namespace WebApi.Models
 {
@@ -62,25 +64,58 @@ namespace WebApi.Models
 
     public class UpdateUser
     {
-        public int? Id { get; set; }
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-
+        /// <summary>
+        /// The Username of User
+        /// </summary>
+        /// <example>Cinderella2020</example>
         public string Username { get; set; }
-
+        /// <summary>
+        /// The firstName of User
+        /// </summary>
+        /// <example>Cinderella</example>
+        public string FirstName { get; set; }
+        /// <summary>
+        /// The Last Name of User
+        /// </summary>
+        /// <example>Glass Shoes</example>
+        public string LastName { get; set; }
+        /// <summary>
+        /// The password of User
+        /// </summary>
+        /// <example>PasswordHere</example>
         public string Password { get; set; }
+        /// <summary>
+        /// The Role of User
+        /// </summary>
+        /// <example>user</example>
         public string Role { get; set; }
     }
     public class GetAllUser
     {
-        public int  Id { get; set; }
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-
+        /// <summary>
+        /// The User Id of User
+        /// </summary>
+        /// <example>10</example>
+        public int Id { get; set; }
+        /// <summary>
+        /// The Username of User
+        /// </summary>
+        /// <example>Cinderella2020</example>
         public string Username { get; set; }
-
+        /// <summary>
+        /// The firstName of User
+        /// </summary>
+        /// <example>Cinderella</example>
+        public string FirstName { get; set; }
+        /// <summary>
+        /// The Last Name of User
+        /// </summary>
+        /// <example>Glass Shoes</example>
+        public string LastName { get; set; }
+        /// <summary>
+        /// The Role of User
+        /// </summary>
+        /// <example>user</example>
         public string Role { get; set; }
     }
 
@@ -116,6 +151,35 @@ namespace WebApi.Models
         /// </summary>
         /// <example>Token: Tokenhere</example>
         public string Token { get; set; }
+    }
+
+    public class BasicUserResponse
+    {
+        /// <summary>
+        /// The User Id of User
+        /// </summary>
+        /// <example>10</example>
+        public int Id { get; set; }
+        /// <summary>
+        /// The Username of User
+        /// </summary>
+        /// <example>Cinderella2020</example>
+        public string Username { get; set; }
+        /// <summary>
+        /// The firstName of User
+        /// </summary>
+        /// <example>Cinderella</example>
+        public string FirstName { get; set; }
+        /// <summary>
+        /// The Last Name of User
+        /// </summary>
+        /// <example>Glass Shoes</example>
+        public string LastName { get; set; }
+        /// <summary>
+        /// The Role of User
+        /// </summary>
+        /// <example>user</example>
+        public string Role { get; set; }
     }
 
 }
