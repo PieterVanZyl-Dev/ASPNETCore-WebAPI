@@ -10,8 +10,8 @@ namespace WebApi.Models
             Employee = new HashSet<Employee>();
         }
 
-        public int GenderId { get; set; }
-        public string Name { get; set; }
+        public byte GenderId { get; set; }
+        public string Gender1 { get; set; }
 
         public virtual ICollection<Employee> Employee { get; set; }
     }

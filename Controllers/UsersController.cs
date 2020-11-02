@@ -12,6 +12,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 
 namespace WebApi.Controllers
 {
@@ -31,35 +32,154 @@ namespace WebApi.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        public async Task<ActionResult<IEnumerable<GetAllUser>>> GetUser()
         {
-            return await _context.User.ToListAsync();
+            return await _context.User
+                .Select(p => new GetAllUser
+                {
+                    Id = p.Id,
+                    FirstName = p.FirstName,
+                    LastName = p.LastName,
+                    Username = p.UserName,
+                    Role = p.Role
+                }).ToListAsync();
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
+            // Cast to ClaimsIdentity.
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            // Gets list of claims.
+            IEnumerable<Claim> claim = identity.Claims;
+
+            // Gets ID from claims. 
+            var usernameClaim = claim
+                .Where(x => x.Type == ClaimTypes.Name)
+                .FirstOrDefault();
+
+            // Finds user. using ID converted from string to int
+            var userName = await _context.User
+            .Where(x => x.Id == Int32.Parse(usernameClaim.Value))
+            .FirstOrDefaultAsync();
+
+            //Username Token == null, then Badrequest
+            if (userName == null)
+            {
+                return BadRequest(new { message = "Woops" });
+            }
+            if (!(userName.Id == id) & userName.Role != "admin")
+            {
+                return Unauthorized(new { message = "Trying to update other users if you're not an admin is not allowed. Message Administrator" });
+            }
             var user = await _context.User.FindAsync(id);
 
             if (user == null)
             {
                 return NotFound();
             }
-
-            return user;
+            //Password, hash and salt should never be exposed, I don't think admins should ever need to see a users password
+            //if needed they can change the password with an update/put request though.
+            return Ok(new
+            {
+                Id = user.Id,
+                Username = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Role = user.Role
+            }); ;
         }
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(int id, UpdateUser user)
         {
-            if (id != user.Id)
+            // Cast to ClaimsIdentity.
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            // Gets list of claims.
+            IEnumerable<Claim> claim = identity.Claims;
+
+            // Gets ID from claims. 
+            var usernameClaim = claim
+                .Where(x => x.Type == ClaimTypes.Name)
+                .FirstOrDefault();
+
+            // Finds user. using ID converted from string to int
+            var userName = await _context.User
+            .Where(x => x.Id == Int32.Parse(usernameClaim.Value))
+            .FirstOrDefaultAsync();
+
+
+
+            //Username Token == null, then Badrequest
+            if (userName == null)
             {
+                return BadRequest(new { message = "Woops" });
+            }
+
+            if ((id < 0) & (user.Id == null))
+            {
+
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            // if Username.Id (The id of the token != id of the user being edited, unauthorized;
+            //and user is not an admin return unauthorized.
+            if (!(userName.Id == user.Id.GetValueOrDefault()) & userName.Role != "admin")
+            {
+                return Unauthorized(new { message = "Trying to update other users if you're not an admin is not allowed. Message Administrator" });
+            }
+
+            var userobj = await _context.User
+            .FindAsync(id);
+
+            //only admin can adjust role
+            if (userobj.Role == "admin" && user.Role != null)
+            {
+                userobj.Role = user.Role;
+            }
+
+            //throw unauthorized, if the user is not an admin and is trying to set a role !
+            if (userobj.Role != "admin" && user.Role != null)
+            {
+
+                return Unauthorized(new { message = "User can't adjust role, please try a different update command without including role."});
+            }
+
+            //if password change is being requested, we need to update the password, hash & salt.
+            if(user.Password != null)
+            {
+                byte[] passwordHash, passwordSalt;
+                CreatePasswordHash(user.Password, out passwordHash, out passwordSalt);
+                userobj.PasswordHash = passwordHash;
+                userobj.PasswordSalt = passwordSalt;
+
+            }
+
+            if(user.FirstName != null)
+            {
+                userobj.FirstName = user.FirstName;
+            }
+
+            if (user.LastName != null)
+            {
+                userobj.LastName = user.LastName;
+            }
+
+            if (user.Username != null)
+            {
+                userobj.UserName = user.Username;
+            }
+
+
+
+            _context.Entry(userobj).State = EntityState.Modified;
+
+
+
 
             try
             {
@@ -77,7 +197,8 @@ namespace WebApi.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(new{ message = "Updated User: " + userName.Id + " " + userName.UserName });
+
         }
 
         // POST: api/Users
@@ -104,6 +225,8 @@ namespace WebApi.Controllers
             userobj.FirstName = user.FirstName;
             userobj.LastName = user.LastName;
             userobj.UserName = user.Username;
+            userobj.Role = "user";
+            //set default role to user.
 
 
 
@@ -115,14 +238,7 @@ namespace WebApi.Controllers
             }
             catch (DbUpdateException)
             {
-                if (UserExists(userobj.Id))
-                {
-                    return Conflict(new { message = "User Name exists" });
-                }
-                else
-                {
                     throw;
-                }
             }
 
             return CreatedAtAction("GetUser", new { id = userobj.Id }, user);
@@ -163,8 +279,9 @@ namespace WebApi.Controllers
                 Username = userobj.UserName,
                 FirstName = userobj.FirstName,
                 LastName = userobj.LastName,
+                Role = userobj.Role,
                 Token = tokenString
-            });
+            }); ;
         }
 
 

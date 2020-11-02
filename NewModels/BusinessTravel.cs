@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WebApi.Models
+namespace WebApi.NewModels
 {
-    public partial class JobRole
+    public partial class BusinessTravel
     {
-        public JobRole()
+        public BusinessTravel()
         {
             Employee = new HashSet<Employee>();
         }
 
-        public byte JobRoleId { get; set; }
-        public string JobRole1 { get; set; }
+        public byte BusinessTravelId { get; set; }
+        public string BusinessTravel1 { get; set; }
 
         public virtual ICollection<Employee> Employee { get; set; }
     }

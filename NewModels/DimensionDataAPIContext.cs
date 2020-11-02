@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace WebApi.Models
+namespace WebApi.NewModels
 {
     public partial class DimensionDataAPIContext : DbContext
     {
@@ -20,6 +20,7 @@ namespace WebApi.Models
         public virtual DbSet<EducationField> EducationField { get; set; }
         public virtual DbSet<Employee> Employee { get; set; }
         public virtual DbSet<EmployeeSurvey> EmployeeSurvey { get; set; }
+        public virtual DbSet<EmployeeSurveyStaging> EmployeeSurveyStaging { get; set; }
         public virtual DbSet<Gender> Gender { get; set; }
         public virtual DbSet<JobRole> JobRole { get; set; }
         public virtual DbSet<MaritalStatus> MaritalStatus { get; set; }
@@ -115,6 +116,12 @@ namespace WebApi.Models
                     .HasConstraintName("FK_EmployeeId");
             });
 
+            modelBuilder.Entity<EmployeeSurveyStaging>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("EmployeeSurvey_Staging");
+            });
 
             modelBuilder.Entity<Gender>(entity =>
             {
