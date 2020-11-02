@@ -17,7 +17,7 @@ namespace WebApi.Services
 
         public bool EmployeeExists(int id)
         {
-            return _context.Employee.Any(e => e.EmployeeId == id);
+            return _context.Employee.Any(e => e.EmployeeNumber == id);
         }
         public bool UserExists(int id)
         {

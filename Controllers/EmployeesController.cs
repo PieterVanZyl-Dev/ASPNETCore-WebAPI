@@ -47,7 +47,7 @@ namespace WebApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmployee(int id, Employee employee)
         {
-            if (id != employee.EmployeeId)
+            if (id != employee.EmployeeNumber)
             {
                 return BadRequest();
             }
@@ -86,7 +86,7 @@ namespace WebApi.Controllers
             }
             catch (DbUpdateException)
             {
-                if (EmployeeExists(employee.EmployeeId))
+                if (EmployeeExists(employee.EmployeeNumber))
                 {
                     return Conflict();
                 }
@@ -96,7 +96,7 @@ namespace WebApi.Controllers
                 }
             }
 
-            return CreatedAtAction("GetEmployee", new { id = employee.EmployeeId }, employee);
+            return CreatedAtAction("GetEmployee", new { id = employee.EmployeeNumber }, employee);
         }
 
         // DELETE: api/Employees/5
@@ -117,7 +117,7 @@ namespace WebApi.Controllers
 
         private bool EmployeeExists(int id)
         {
-            return _context.Employee.Any(e => e.EmployeeId == id);
+            return _context.Employee.Any(e => e.EmployeeNumber == id);
         }
     }
 }
