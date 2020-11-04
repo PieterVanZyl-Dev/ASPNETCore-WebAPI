@@ -11,7 +11,7 @@ namespace WebApi.Models
         }
 
         public byte MaritalStatusId { get; set; }
-        public string MaritalStatus1 { get; set; }
+        public string MaritalStatus1{ get; set; }
 
         public virtual ICollection<Employee> Employee { get; set; }
     }

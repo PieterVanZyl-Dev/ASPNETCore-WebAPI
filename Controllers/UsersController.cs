@@ -61,6 +61,7 @@ namespace WebApi.Controllers
                        FirstName = p.FirstName,
                        LastName = p.LastName,
                        Username = p.UserName,
+                       EmployeeNumber = p.EmployeeNumber,
                        Role = p.Role
                    }).ToListAsync();
             }
@@ -134,6 +135,7 @@ namespace WebApi.Controllers
                 Username = user.UserName,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                EmployeeNumber = user.EmployeeNumber,
                 Role = user.Role
             }); ;
         }
@@ -232,6 +234,10 @@ namespace WebApi.Controllers
             {
                 userobj.UserName = user.Username;
             }
+            if (user.EmployeeNumber > 0)
+            {
+                userobj.EmployeeNumber = user.EmployeeNumber;
+            }
 
 
 
@@ -264,7 +270,7 @@ namespace WebApi.Controllers
         /// Creates/Registers an API User.
         /// </summary>
         /// <param name="user"></param>
-        /// <returns>A newly created TodoItem</returns>
+        /// <returns>A newly created User</returns>
         /// <response code="201">Returns the newly created user item</response>
         /// <response code="400">If the item is null, password doesn't exist or username already exists</response>  
         // POST: api/Users
@@ -293,6 +299,7 @@ namespace WebApi.Controllers
             userobj.FirstName = user.FirstName;
             userobj.LastName = user.LastName;
             userobj.UserName = user.Username;
+            userobj.EmployeeNumber = user.EmployeeNumber;
             userobj.Role = "user";
             //set default role to user.
 
@@ -300,7 +307,6 @@ namespace WebApi.Controllers
             .Where(x => x.UserName == user.Username)
             .FirstOrDefaultAsync();
 
-            Console.WriteLine(userName);
 
             if(userName != null && userName.UserName == user.Username )
             {
@@ -407,6 +413,7 @@ namespace WebApi.Controllers
                     Username = user.UserName,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
+                    EmployeeNumber = user.EmployeeNumber,
                     Role = user.Role,
                 }); ;
 

@@ -56,7 +56,7 @@ namespace WebApi.Models
             {
                 entity.HasKey(e => e.EmployeeNumber);
 
-                entity.Property(e => e.EmployeeNumber).ValueGeneratedNever();
+                entity.Property(e => e.EmployeeNumber).ValueGeneratedOnAdd();
 
 
 
@@ -81,7 +81,7 @@ namespace WebApi.Models
                 entity.HasOne(d => d.EmployeeSurveyNavigation)
                     .WithMany(p => p.Employee)
                     .HasForeignKey(d => d.EmployeeSurvey)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_EmployeeSurvey");
 
                 entity.HasOne(d => d.GenderNavigation)
@@ -105,10 +105,13 @@ namespace WebApi.Models
 
             modelBuilder.Entity<EmployeeSurvey>(entity =>
             {
+
                 entity.HasKey(e => e.SurveyId)
                     .HasName("PK__Employee__A5481F9DF3F4ABC8");
 
                 entity.Property(e => e.SurveyId).HasColumnName("SurveyID");
+
+                entity.Property(e => e.SurveyId).ValueGeneratedOnAdd();
 
                 entity.HasOne(d => d.EmployeeNavigation)
                     .WithMany(p => p.EmployeeSurvey1)
@@ -170,6 +173,9 @@ namespace WebApi.Models
                 entity.Property(e => e.UserName)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.EmployeeNumber)
+                    .IsRequired();
             });
 
             OnModelCreatingPartial(modelBuilder);

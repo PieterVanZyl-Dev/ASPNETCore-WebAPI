@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApi.Models
 {
@@ -10,6 +12,7 @@ namespace WebApi.Models
             Employee = new HashSet<Employee>();
         }
 
+        [Key]
         public int SurveyId { get; set; }
         public int EmployeeId { get; set; }
         public byte EnvironmentSatisfaction { get; set; }

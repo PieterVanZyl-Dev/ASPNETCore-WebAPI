@@ -15,6 +15,7 @@ namespace WebApi.Models
         public string Role { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
+        public int EmployeeNumber { get; set; }
     }
 
     public class AuthenticateUser
@@ -53,7 +54,12 @@ namespace WebApi.Models
         /// <example>Cinderella2020</example>
         [Required]
         public string Username { get; set; }
-
+        /// <summary>
+        /// The Employee Number of the New User
+        /// </summary>
+        /// <example>55</example>
+        [Required]
+        public int EmployeeNumber { get; set; }
         /// <summary>
         /// The Password of the New User
         /// </summary>
@@ -79,6 +85,11 @@ namespace WebApi.Models
         /// </summary>
         /// <example>Glass Shoes</example>
         public string LastName { get; set; }
+        /// <summary>
+        /// The Employee Number of the New User
+        /// </summary>
+        /// <example>55</example>
+        public int EmployeeNumber { get; set; }
         /// <summary>
         /// The password of User
         /// </summary>
@@ -113,6 +124,11 @@ namespace WebApi.Models
         /// <example>Glass Shoes</example>
         public string LastName { get; set; }
         /// <summary>
+        /// The Employee Number of the New User
+        /// </summary>
+        /// <example>55</example>
+        public int EmployeeNumber { get; set; }
+        /// <summary>
         /// The Role of User
         /// </summary>
         /// <example>user</example>
@@ -141,6 +157,11 @@ namespace WebApi.Models
         /// </summary>
         /// <example>Glass Shoes</example>
         public string LastName { get; set; }
+        /// <summary>
+        /// The Employee Number of the New User
+        /// </summary>
+        /// <example>55</example>
+        public int EmployeeNumber { get; set; }
         /// <summary>
         /// The Role of User
         /// </summary>
@@ -175,6 +196,11 @@ namespace WebApi.Models
         /// </summary>
         /// <example>Glass Shoes</example>
         public string LastName { get; set; }
+        /// <summary>
+        /// The Employee Number of the New User
+        /// </summary>
+        /// <example>55</example>
+        public int EmployeeNumber { get; set; }
         /// <summary>
         /// The Role of User
         /// </summary>
