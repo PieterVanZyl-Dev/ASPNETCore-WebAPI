@@ -332,7 +332,7 @@ namespace WebApi.Controllers
 
             if (userName == null)
             {
-                return BadRequest(new { message = "Woops" });
+                return BadRequest(new { message = "Woops, that user doesn't exist" });
             }
 
             bool isAdmin = RoleClaim.Value == "admin";
@@ -341,10 +341,6 @@ namespace WebApi.Controllers
             if (isAdmin || isSelf)
             {
 
-                if (id != employee.EmployeeNumber)
-                {
-                    return BadRequest();
-                }
 
                 if (employee.Age > 0)
                 {
@@ -353,7 +349,7 @@ namespace WebApi.Controllers
 
                 if (employee.Attrition != null)
                 {
-                    employeeobj.Attrition = employee.Attrition;
+                    employeeobj.Attrition = employee.Attrition ?? default(bool);
                 }
 
                 if (employee.BusinessTravel != null)
@@ -499,7 +495,7 @@ namespace WebApi.Controllers
 
                 if (employee.OverTime != null)
                 {
-                    employeeobj.OverTime = employee.OverTime;
+                    employeeobj.OverTime = employee.OverTime ?? default(bool);
                 }
 
                 if (employee.PercentSalaryHike > 0 && !isAdmin)
@@ -902,6 +898,7 @@ namespace WebApi.Controllers
                 }
 
                 employeeobj.EmployeeSurvey = 101;
+
                 _context.Employee.Add(employeeobj);
                 try
                 {
@@ -989,17 +986,21 @@ namespace WebApi.Controllers
                 {
                     throw;
                 }
-
-
-
-
-            }
-            var createdEmployeeObj = await _context.Employee
+             var createdEmployeeObj = await _context.Employee
                 .AsNoTracking()
                 .Where(x => x.EmployeeNumber == employeeobj.EmployeeNumber)
                 .Select(a => new { EmployeeNumber = a.EmployeeNumber })
                 .FirstOrDefaultAsync();
-            return Ok(new { message = "Created Employee: " + createdEmployeeObj.EmployeeNumber + " with provided values.\n" + employee });
+
+                return Ok(new { message = "Created Employee: " + createdEmployeeObj.EmployeeNumber + " with provided values.\n" + employee });
+
+
+
+            }else
+            {
+                return BadRequest(new { message = "You are not an admin only admin's can create employees"});
+            }
+
         }
 
 
@@ -1023,6 +1024,7 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
+
             var employeesurvey = await _context.EmployeeSurvey
                 .Where(x => x.EmployeeId == id)
                 .ToListAsync();

@@ -13,11 +13,11 @@ namespace WebApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class DepartmentsController : ControllerBase
+    public class BusinessTravelsController : ControllerBase
     {
         private readonly DimensionDataAPIContext _context;
 
-        public DepartmentsController(DimensionDataAPIContext context)
+        public BusinessTravelsController(DimensionDataAPIContext context)
         {
             _context = context;
         }
@@ -30,52 +30,56 @@ namespace WebApi.Controllers
         /// <response code="403">Throws forbidden if user is not authenticated</response>  
         // GET: api/Departments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Department>>> GetDepartment()
+        public async Task<ActionResult<IEnumerable<BusinessTravelResponse>>> GetBusinessTravel()
         {
-            return await _context.Department.ToListAsync();
+            return await _context.BusinessTravel.Select(a =>new BusinessTravelResponse { BusinessTravel1 = a.BusinessTravel1, BusinessTravelId = a.BusinessTravelId }).ToListAsync();
         }
 
         /// <summary>
-        /// Gets a single Department item.
+        /// Gets a single businessTravel item.
         /// </summary>
         /// <param name="id" example="1"></param>
-        /// <returns>return a Department entry matching the table</returns>
-        /// <response code="200">return a Department entry matching the table</response>
+        /// <returns>return a businessTravel entry matching the table</returns>
+        /// <response code="200">return a businessTravel entry matching the table</response>
         /// <response code="403">Throws forbidden if user is not authenticated</response>  
-        // GET: api/Departments/5
+        // GET: api/BusinessTravels/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Department>> GetDepartment(byte id)
+        public async Task<ActionResult<BusinessTravelResponse>> GetBusinessTravel(byte id)
         {
-            var department = await _context.Department.FindAsync(id);
+            var businessTravel = await _context.BusinessTravel
+                .Where(a => a.BusinessTravelId == id)
+                .Select(a => new BusinessTravelResponse { BusinessTravel1 = a.BusinessTravel1, BusinessTravelId = a.BusinessTravelId })
+                .FirstOrDefaultAsync();
 
-            if (department == null)
+            if (businessTravel == null)
             {
                 return NotFound();
             }
 
-            return department;
+            return businessTravel;
         }
 
+
         /// <summary>
-        /// Updates a single department item.
+        /// Updates a single businessTravel item.
         /// </summary>
         /// <param name="id" example="1"></param>
-        /// <param name="department"></param>
-        /// <returns>return an Update of a department item</returns>
-        /// <response code="200">return an Update of a department item</response>
+        /// <param name="businessTravel"></param>
+        /// <returns>return an Update of a businessTravel item</returns>
+        /// <response code="200">return an Update of a businessTravel item</response>
         /// <response code="403">Throws forbidden if user is not authenticated or is not admin</response>
         /// <response code="403">Throws bad request if id doesn't exist</response>  
-        // PUT: api/Departments/5
+        // PUT: api/businessTravel/5
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDepartment(byte id, Department department)
+        public async Task<IActionResult> PutBusinessTravel(byte id, BusinessTravel businessTravel)
         {
-            if (id != department.DepartmentId)
+            if (id != businessTravel.BusinessTravelId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(department).State = EntityState.Modified;
+            _context.Entry(businessTravel).State = EntityState.Modified;
 
             try
             {
@@ -83,7 +87,7 @@ namespace WebApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!DepartmentExists(id))
+                if (!BusinessTravelExists(id))
                 {
                     return NotFound();
                 }
@@ -97,26 +101,26 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
-        /// Creates a single new department item.
+        /// Creates a single new businessTravel item.
         /// </summary>
-        /// <param name="department"></param>
-        /// <returns>return an Update of a department item</returns>
-        /// <response code="200">return an Update of a department item</response>
+        /// <param name="businessTravel"></param>
+        /// <returns>return an Update of a businessTravel item</returns>
+        /// <response code="200">return an Update of a businessTravel item</response>
         /// <response code="403">Throws forbidden if user is not authenticated or is not admin</response>
         /// <response code="403">Throws bad request if id doesn't exist</response>  
-        // POST: api/Departments
+        // POST: api/BusinessTravels
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<ActionResult<Department>> PostDepartment(Department department)
+        public async Task<ActionResult<BusinessTravel>> PostBusinessTravel(BusinessTravel businessTravel)
         {
-            _context.Department.Add(department);
+            _context.BusinessTravel.Add(businessTravel);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (DepartmentExists(department.DepartmentId))
+                if (BusinessTravelExists(businessTravel.BusinessTravelId))
                 {
                     return Conflict();
                 }
@@ -126,39 +130,37 @@ namespace WebApi.Controllers
                 }
             }
 
-            return CreatedAtAction("GetDepartment", new { id = department.DepartmentId }, department);
+            return CreatedAtAction("GetBusinessTravel", new { id = businessTravel.BusinessTravelId }, businessTravel);
         }
 
         /// <summary>
-        /// Deletes a department item.
+        /// Deletes a Business Travel item.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>return an Update of a department item</returns>
-        /// <response code="200">return an Update of a department item</response>
+        /// <returns>return an Update of a BusinessTravel item</returns>
+        /// <response code="200">return an Update of a BusinessTravel item</response>
         /// <response code="403">Throws forbidden if user is not authenticated or is not admin</response>
         /// <response code="404">Throws not found if id doesn't exist</response>  
         // DELETE: api/Departments/5
         [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Department>> DeleteDepartment(byte id)
+        public async Task<ActionResult<BusinessTravel>> DeleteBusinessTravel(byte id)
         {
-            var department = await _context.Department.FindAsync(id);
-            if (department == null)
+            var businessTravel = await _context.BusinessTravel.FindAsync(id);
+            if (businessTravel == null)
             {
                 return NotFound();
             }
 
-            _context.Department.Remove(department);
+            _context.BusinessTravel.Remove(businessTravel);
             await _context.SaveChangesAsync();
 
-
-
-            return department;
+            return businessTravel;
         }
 
-        private bool DepartmentExists(byte id)
+        private bool BusinessTravelExists(byte id)
         {
-            return _context.Department.Any(e => e.DepartmentId == id);
+            return _context.BusinessTravel.Any(e => e.BusinessTravelId == id);
         }
     }
 }

@@ -13,69 +13,70 @@ namespace WebApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class DepartmentsController : ControllerBase
+    public class JobRolesController : ControllerBase
     {
         private readonly DimensionDataAPIContext _context;
 
-        public DepartmentsController(DimensionDataAPIContext context)
+        public JobRolesController(DimensionDataAPIContext context)
         {
             _context = context;
         }
 
         /// <summary>
-        /// Gets a list of Departments in Table.
+        /// Gets a list of Job Role in Table.
         /// </summary>
-        /// <returns>return list of Departments items</returns>
-        /// <response code="200">return list of Departments items</response>
+        /// <returns>return list of Job Role items</returns>
+        /// <response code="200">return list of Job Role items</response>
         /// <response code="403">Throws forbidden if user is not authenticated</response>  
-        // GET: api/Departments
+        // GET: api/JobRoles
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Department>>> GetDepartment()
+        public async Task<ActionResult<IEnumerable<JobRole>>> GetJobRole()
         {
-            return await _context.Department.ToListAsync();
+            return await _context.JobRole.ToListAsync();
         }
-
         /// <summary>
-        /// Gets a single Department item.
+        /// Gets a single job Role item.
         /// </summary>
-        /// <param name="id" example="1"></param>
-        /// <returns>return a Department entry matching the table</returns>
-        /// <response code="200">return a Department entry matching the table</response>
+        /// <param name="id" jobRole="1"></param>
+        /// <returns>return a job Role entry matching the table</returns>
+        /// <response code="200">return a job Role entry matching the table</response>
         /// <response code="403">Throws forbidden if user is not authenticated</response>  
-        // GET: api/Departments/5
+        // GET: api/JobRoles/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Department>> GetDepartment(byte id)
+        public async Task<ActionResult<JobRole>> GetJobRole(byte id)
         {
-            var department = await _context.Department.FindAsync(id);
+            var jobRole = await _context.JobRole.FindAsync(id);
 
-            if (department == null)
+            if (jobRole == null)
             {
                 return NotFound();
             }
 
-            return department;
+            return jobRole;
         }
 
+
+
         /// <summary>
-        /// Updates a single department item.
+        /// Updates a single job Role item.
         /// </summary>
         /// <param name="id" example="1"></param>
-        /// <param name="department"></param>
-        /// <returns>return an Update of a department item</returns>
-        /// <response code="200">return an Update of a department item</response>
+        /// <param name="jobRole"></param>
+        /// <returns>return an Update of a job Role item</returns>
+        /// <response code="200">return an Update of a job Role item</response>
         /// <response code="403">Throws forbidden if user is not authenticated or is not admin</response>
         /// <response code="403">Throws bad request if id doesn't exist</response>  
-        // PUT: api/Departments/5
+        // PUT: api/JobRoles/5
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDepartment(byte id, Department department)
+        public async Task<IActionResult> PutJobRole(byte id, JobRole jobRole)
         {
-            if (id != department.DepartmentId)
+            if (id != jobRole.JobRoleId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(department).State = EntityState.Modified;
+            _context.Entry(jobRole).State = EntityState.Modified;
 
             try
             {
@@ -83,7 +84,7 @@ namespace WebApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!DepartmentExists(id))
+                if (!JobRoleExists(id))
                 {
                     return NotFound();
                 }
@@ -96,27 +97,28 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
+
         /// <summary>
-        /// Creates a single new department item.
+        /// Creates a single new jobRole item.
         /// </summary>
-        /// <param name="department"></param>
-        /// <returns>return an Update of a department item</returns>
-        /// <response code="200">return an Update of a department item</response>
+        /// <param name="jobRole"></param>
+        /// <returns>return an Update of a jobRole item</returns>
+        /// <response code="200">return an Update of a jobRole item</response>
         /// <response code="403">Throws forbidden if user is not authenticated or is not admin</response>
         /// <response code="403">Throws bad request if id doesn't exist</response>  
-        // POST: api/Departments
+        // POST: api/JobRoles
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<ActionResult<Department>> PostDepartment(Department department)
+        public async Task<ActionResult<JobRole>> PostJobRole(JobRole jobRole)
         {
-            _context.Department.Add(department);
+            _context.JobRole.Add(jobRole);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (DepartmentExists(department.DepartmentId))
+                if (JobRoleExists(jobRole.JobRoleId))
                 {
                     return Conflict();
                 }
@@ -126,39 +128,37 @@ namespace WebApi.Controllers
                 }
             }
 
-            return CreatedAtAction("GetDepartment", new { id = department.DepartmentId }, department);
+            return CreatedAtAction("GetJobRole", new { id = jobRole.JobRoleId }, jobRole);
         }
 
         /// <summary>
-        /// Deletes a department item.
+        /// Deletes a JobRole item.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>return an Update of a department item</returns>
-        /// <response code="200">return an Update of a department item</response>
+        /// <returns>return an Update of a JobRole item</returns>
+        /// <response code="200">return an Update of a JobRole item</response>
         /// <response code="403">Throws forbidden if user is not authenticated or is not admin</response>
         /// <response code="404">Throws not found if id doesn't exist</response>  
-        // DELETE: api/Departments/5
+        // DELETE: api/JobRoles/5
         [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Department>> DeleteDepartment(byte id)
+        public async Task<ActionResult<JobRole>> DeleteJobRole(byte id)
         {
-            var department = await _context.Department.FindAsync(id);
-            if (department == null)
+            var jobRole = await _context.JobRole.FindAsync(id);
+            if (jobRole == null)
             {
                 return NotFound();
             }
 
-            _context.Department.Remove(department);
+            _context.JobRole.Remove(jobRole);
             await _context.SaveChangesAsync();
 
-
-
-            return department;
+            return jobRole;
         }
 
-        private bool DepartmentExists(byte id)
+        private bool JobRoleExists(byte id)
         {
-            return _context.Department.Any(e => e.DepartmentId == id);
+            return _context.JobRole.Any(e => e.JobRoleId == id);
         }
     }
 }

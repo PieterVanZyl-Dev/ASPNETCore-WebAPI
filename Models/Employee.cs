@@ -321,7 +321,7 @@ namespace WebApi.Models
         /// The Attrition of the Employee
         /// </summary>
         /// <example>true</example>
-        public bool Attrition { get; set; }
+        public bool? Attrition { get; set; }
         /// <summary>
         /// The amount of Business Traveling the Employee does
         /// </summary>
@@ -416,7 +416,7 @@ namespace WebApi.Models
         ///  Does the Employee work over time (true/false)
         /// </summary>
         /// <example>true</example>
-        public bool OverTime { get; set; }
+        public bool? OverTime { get; set; }
         /// <summary>
         ///  Percentage Salary Hike for Employee
         /// </summary>

@@ -208,4 +208,23 @@ namespace WebApi.Models
         public string Role { get; set; }
     }
 
+    public class Limited
+    {
+        /// <summary>
+        /// The User Id of User
+        /// </summary>
+        /// <example>10</example>
+        public int Id { get; set; }
+        /// <summary>
+        /// The firstName of User
+        /// </summary>
+        /// <example>Cinderella</example>
+        public string FirstName { get; set; }
+        /// <summary>
+        /// The Last Name of User
+        /// </summary>
+        /// <example>Glass Shoes</example>
+        public string LastName { get; set; }
+    }
+
 }

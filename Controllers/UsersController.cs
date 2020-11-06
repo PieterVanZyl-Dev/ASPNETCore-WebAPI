@@ -343,6 +343,9 @@ namespace WebApi.Controllers
             bool Ispassword = false;
             var userobj = _context.User.SingleOrDefault(x => x.UserName == user.Username);
 
+            if(userobj == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
+
             if (VerifyPasswordHash(user.Password, userobj.PasswordHash, userobj.PasswordSalt))
                 Ispassword = true;
 

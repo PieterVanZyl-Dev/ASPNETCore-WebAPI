@@ -15,4 +15,20 @@ namespace WebApi.Models
 
         public virtual ICollection<Employee> Employee { get; set; }
     }
+
+    public class BusinessTravelResponse
+    {
+        /// <summary>
+        /// The BusinessTravelId
+        /// </summary>
+        /// <example>1</example>
+        public byte BusinessTravelId { get; set; }
+        /// <summary>
+        /// The string related to the ID (Rarely/Often etc.)
+        /// </summary>
+        /// <example>rarely</example>
+        public string BusinessTravel1 { get; set; }
+    }
+
+
 }
